@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file, render_template_string
 import pandas as pd
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -51,12 +52,14 @@ def process():
     # Apply logic
     df["Monthly_Salary"] = df.apply(lambda row: calculate_monthly_salary(row["salary"], row["leaves"]), axis=1)
 
-    # Save output
-    output_path = "output.xlsx"
-    df.to_excel(output_path, index=False)
+    # Generate filename with Month_Year
+    month_year = datetime.now().strftime("%B_%Y")  # e.g., August_2025
+    output_filename = f"{month_year}_output.xlsx"
 
-    return send_file(output_path, as_attachment=True)
+    # Save output
+    df.to_excel(output_filename, index=False)
+
+    return send_file(output_filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-
